@@ -35,7 +35,7 @@ while True:
     #     setServo(180 - angle)
     #     time.sleep(delay_period)
 
-    if GPIO.input(switch_pin) is False:
+    if GPIO.input(switch_pin) == False:
         set_servo(12)
         print"12 degrees"
     else:
