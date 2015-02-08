@@ -42,14 +42,15 @@ def read_range(j=0):
             print "Not ready to range."
             return -1
         sleep(0.01)
+    print "Ready to range. %s" % bin(read(0x4d))
     write(0x18, 0x01)
     j = 0
-    while (read(0x4f) & 0x04) == 0:
+    while ((read(0x4f) >> 2) & 0x01) == 0:
         j += 1
         if j > 3:
-            print "Measurement not complete. %d" % read(0x4d)
+            print "Measurement not complete. %s %d" % (bin(read(0x4d) >> 4), read(0x62))
             return -1
-        sleep(0.01)    range1 = read(2)
+        sleep(0.05)
     range_read = read(0x62)
     write(0x15, 0x07)
     print"Ranging complete: %d" % range_read
@@ -87,5 +88,5 @@ while True:
 #    else:
 #        led_out(0x3F)
 
-read_range()
-sleep(2)
+    read_range()
+    sleep(2)
