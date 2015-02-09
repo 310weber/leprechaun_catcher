@@ -22,6 +22,9 @@ for i in range(len(LED)):
     GPIO.output(LED[i], 0)  # Turn all LEDs off
 
 
+def VL6180X_init:
+
+
 # i2c write function
 def write(location, value):
     bus.write_byte_data(address, location, value)
