@@ -10,7 +10,7 @@ For doing this you have to create a "/etc/modprobe.d/i2c.conf" file and adding a
 "options i2c_bcm2708 baudrate=75000" line.
 """
 
-import smbus
+import Adafruit_I2C
 from time import sleep
 
 bus = smbus.SMBus(1)
