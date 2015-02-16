@@ -2,14 +2,25 @@
 # - power explorer board with 3.3 V
 # - explorer board includes pull-ups on i2c
 
-import smbus
+from ST_VL6180X import VL6180X
 from time import sleep
 import RPi.GPIO as GPIO  # Import GPIO functions
-import sys
 
 # setup i2c bus and ToF address
-bus = smbus.SMBus(1)
-address = 0x29
+tof_address = 0x29
+tof_sensor = VL6180X(address=tof_address, debug=True)
+tof_sensor.get_identification()
+if tof_sensor.debug:
+    if tof_sensor.idModel != 0xB4:
+        print"Not a valid sensor id: %X" % tof_sensor.idModel
+    else:
+        print"Sensor model: %X" % tof_sensor.idModel
+        print"Sensor model rev.: %d.%d" % \
+             (tof_sensor.idModelRevMajor, tof_sensor.idModelRevMinor)
+        print"Sensor module rev.: %d.%d" % \
+             (tof_sensor.idModuleRevMajor, tof_sensor.idModuleRevMinor)
+        print"Sensor date/time: %X/%X" % (tof_sensor.idDate, tof_sensor.idTime)
+tof_sensor.default_settings()
 
 # Set output pin numbers for LEDS
 GPIO.setmode(GPIO.BCM)  # Use GPIO numbering scheme (not pin numbers)
@@ -21,43 +32,10 @@ for i in range(len(LED)):
     print("GPIO_%d is output" % LED[i])
     GPIO.output(LED[i], 0)  # Turn all LEDs off
 
-
-# i2c write function
-def write(location, value):
-    bus.write_byte_data(address, location, value)
-    return -1
+sleep(1)
 
 
-# i2c read function
-def read(location):
-    read_data = bus.read_byte_data(address, location)
-    return read_data
-
-
-# Range finding function
-def read_range(j=0):
-    while (read(0x4d) & 0x01) == 0:
-        j += 1
-        if j > 3:
-            print "Not ready to range."
-            return -1
-        sleep(0.01)
-    print "Ready to range. %s" % bin(read(0x4d))
-    write(0x18, 0x01)
-    j = 0
-    while ((read(0x4f) >> 2) & 0x01) == 0:
-        j += 1
-        if j > 3:
-            print "Measurement not complete. %s %d" % (bin(read(0x4d) >> 4), read(0x62))
-            return -1
-        sleep(0.05)
-    range_read = read(0x62)
-    write(0x15, 0x07)
-    print"Ranging complete: %d" % range_read
-    return range_read
-
-
-# LED lighting function
+"""-- LED lighting function for debug --"""
 def led_out(value):
     for i in range(len(LED)):
         GPIO.output(LED[i], value & (1 << i))  # Set LEDs based on value
@@ -65,28 +43,28 @@ def led_out(value):
 
 """-- MAIN LOOP --"""
 while True:
-#    write(0, 0x51)  # Set SRF to return distance in cm
-#    sleep(0.1)
-#    # while range() == 0xFF:        # Wait for range finder to be ready
-#    # pass                          # Do nothing
-#    rng = (read_range() + read_range()) / 2
+    # write(0, 0x51)  # Set SRF to return distance in cm
+    # sleep(0.1)
+    # while range() == 0xFF:        # Wait for range finder to be ready
+    #     pass                          # Do nothing
+    # rng = (read_range() + read_range()) / 2
 
-#    print "\rDistance is: %3.0f" % rng,
-#    sys.stdout.flush()  # Flush output buffer to force print update
+    # print "\rDistance is: %3.0f" % rng,
+    # sys.stdout.flush()  # Flush output buffer to force print update
 
     # Set LED output based on range value
-#    if rng >= 50:
-#        led_out(0x01)
-#    elif rng >= 40:
-#        led_out(0x03)
-#    elif rng >= 30:
-#        led_out(0x07)
-#    elif rng >= 20:
-#        led_out(0x0F)
-#    elif rng >= 10:
-#        led_out(0x1F)
-#    else:
-#        led_out(0x3F)
-
-    read_range()
-    sleep(2)
+    # if rng >= 50:
+    #     led_out(0x01)
+    # elif rng >= 40:
+    #     led_out(0x03)
+    # elif rng >= 30:
+    #     led_out(0x07)
+    # elif rng >= 20:
+    #     led_out(0x0F)
+    # elif rng >= 10:
+    #     led_out(0x1F)
+    # else:
+    #     led_out(0x3F)
+    print "Measured distance is : %d mm" % tof_sensor.get_distance()
+    print "Measured light level is : %d lux" % tof_sensor.get_ambient_light(20)
+    sleep(1)

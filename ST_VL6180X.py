@@ -13,7 +13,7 @@ from Adafruit_I2C import Adafruit_I2C
 # ===========================================================================
 
 
-class VL6180x:
+class VL6180X:
     i2c = None
 
     __VL6180X_IDENTIFICATION_MODEL_ID               = 0x0000
@@ -77,20 +77,40 @@ class VL6180x:
     __VL6180X_I2C_SLAVE_DEVICE_ADDRESS              = 0x0212
     __VL6180X_INTERLEAVED_MODE_ENABLE               = 0x02A3
 
-    # Dictionaries with the gain values
+    __ALS_GAIN_1    = 0x06
+    __ALS_GAIN_1_25 = 0x05
+    __ALS_GAIN_1_67 = 0x04
+    __ALS_GAIN_2_5  = 0x03
+    __ALS_GAIN_5    = 0x02
+    __ALS_GAIN_10   = 0x01
+    __ALS_GAIN_20   = 0x00
+    __ALS_GAIN_40   = 0x07
+
+    # Dictionaries with the valid ALS gain values
     # These simplify and clean the code (avoid abuse of if/elif/else clauses)
-    VL6180X_ALS_GAIN = {    # Data sheet shows gain values as binary list
-        0x06: 1.01,     # Nominal gain of 1;    actual Gain of 1.01
-        0x05: 1.28,     # Nominal gain of 1.25; actual ALS Gain of 1.28
-        0x04: 1.72,     # Nominal gain of 1.67; actual ALS Gain of 1.72
-        0x03: 2.60,     # Nominal gain of 2.5;  actual ALS Gain of 2.60
-        0x02: 5.21,     # Nominal gain of 5;    actual ALS Gain of 5.21
-        0x01: 10.32,    # Nominal gain of 10;   actual ALS Gain of 10.32
-        0x00: 20.00,    # Nominal gain of 20;   actual ALS Gain of 20
-        0x07: 40.00,    # Nominal gain of 40;   actual ALS Gain of 40
+    ALS_GAIN_REG = {
+        1:      __ALS_GAIN_1,
+        1.25:   __ALS_GAIN_1_25,
+        1.67:   __ALS_GAIN_1_67,
+        2.5:    __ALS_GAIN_2_5,
+        5:      __ALS_GAIN_5,
+        10:     __ALS_GAIN_10,
+        20:     __ALS_GAIN_20,
+        40:     __ALS_GAIN_40
     }
 
-    def __init__(self, address=0x29):
+    ALS_GAIN_ACTUAL = {    # Data sheet shows gain values as binary list
+        1:      1.01,      # Nominal gain 1;    actual gain 1.01
+        1.25:   1.28,      # Nominal gain 1.25; actual gain 1.28
+        1.67:   1.72,      # Nominal gain 1.67; actual gain 1.72
+        2.5:    2.60,      # Nominal gain 2.5;  actual gain 2.60
+        5:      5.21,      # Nominal gain 5;    actual gain 5.21
+        10:     10.32,     # Nominal gain 10;   actual gain 10.32
+        20:     20.00,     # Nominal gain 20;   actual gain 20
+        40:     40.00,     # Nominal gain 40;   actual gain 40
+    }
+
+    def __init__(self, address=0x29, debug=False):
         # Depending on if you have an old or a new Raspberry Pi, you
         # may need to change the I2C bus.  Older Pis use SMBus 0,
         # whereas new Pis use SMBus 1.  If you see an error like:
@@ -98,6 +118,7 @@ class VL6180x:
         # change the SMBus number in the initializer below!
         self.i2c = Adafruit_I2C(address)
         self.address = address
+        self.debug = debug
 
         # Module identification
         self.idModel = 0x00
@@ -108,8 +129,12 @@ class VL6180x:
         self.idDate = 0x00
         self.idTime = 0x00
 
-        if self.get_register(self.__VL6180X_SYSTEM_FRESH_OUT_OF_RESET) != 1:
-            print "Failure reset."
+        if self.get_register(self.__VL6180X_SYSTEM_FRESH_OUT_OF_RESET) == 1:
+            print "ToF sensor is ready."
+            self.ready = True
+        else:
+            print "ToF sensor reset failure."
+            self.ready = False
 
         # Required by datasheet
         # http://www.st.com/st-web-ui/static/active/en/resource/technical/document/application_note/DM00122600.pdf
@@ -224,15 +249,22 @@ class VL6180x:
         self.set_register(self.__VL6180X_SYSTEM_INTERRUPT_CLEAR, 0x07)
         return distance
 
-    def get_ambient_light(self, vl6180x_als_gain):
+    def get_ambient_light(self, als_gain):
         # First load in Gain we are using, do it every time in case someone
         # changes it on us.
         # Note: Upper nibble should be set to 0x4 i.e. for ALS gain
         # of 1.0 write 0x46
 
-        # Set the ALS gain
-        self.set_register(self.__VL6180X_SYSALS_ANALOGUE_GAIN,
-                          (0x40 | vl6180x_als_gain))
+        # Set the ALS gain, defaults to 20.
+        # If gain is in the dictionary (defined in init()) it returns the value
+        # of the constant otherwise it returns the value for gain 20.
+        # This saves a lot of if/elif/else code!
+        if als_gain not in self.ALS_GAIN_ACTUAL:
+            print "Invalid gain setting: %d.  Setting to 20." % als_gain
+        als_gain_actual = self.ALS_GAIN_ACTUAL.setdefault(als_gain, 20)
+        self.set_register(
+            self.__VL6180X_SYSALS_ANALOGUE_GAIN,
+            (0x40 | self.ALS_GAIN_REG.setdefault(als_gain, self.__ALS_GAIN_20)))
 
         # Start ALS Measurement
         self.set_register(self.__VL6180X_SYSALS_START, 0x01)
@@ -252,14 +284,8 @@ class VL6180x:
         als_integration_period = 100.0 / als_integration_period_raw
 
         # Calculate actual LUX from application note
-        if vl6180x_als_gain not in self.VL6180X_ALS_GAIN:
-            print "Invalid gain setting: %d" % vl6180x_als_gain
-            als_gain = 20.0
-        else:
-            als_gain = self.VL6180X_ALS_GAIN[vl6180x_als_gain]
+        als_calculated = 0.32 * (als_raw / als_gain_actual) * als_integration_period
 
-        # Calculate LUX from formula in AppNotes
-        als_calculated = 0.32 * (als_raw / als_gain) * als_integration_period
         return als_calculated
 
     def get_register(self, register_address):
