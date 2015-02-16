@@ -297,7 +297,7 @@ class VL6180X:
         return (data[0] << 8) | (data[1] & 0xFF)
 
     def set_register(self, register_address, data):
-        self.i2c.writeList(register_address, data & 0xFF)
+        self.i2c.write8(register_address, data & 0xFF)
 
     def set_register_16bit(self, register_address, data):
         self.i2c.write16(register_address, data)
