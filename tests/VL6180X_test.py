@@ -1,6 +1,8 @@
-# ST VL6180X ToF range finder program
-# - power explorer board with 3.3 V
-# - explorer board includes pull-ups on i2c
+#!/usr/bin/python
+
+""" ST VL6180X ToF range finder program
+ - power explorer board with 3.3 V
+ - explorer board includes pull-ups on i2c """
 
 from ST_VL6180X import VL6180X
 from time import sleep
