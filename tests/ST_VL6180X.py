@@ -290,7 +290,7 @@ class VL6180X:
 
     def get_register(self, register_address):
         data = self.i2c.readList(register_address, 1)
-        return data
+        return data[0] & 0xFF
 
     def get_register_16bit(self, register_address):
         data = self.i2c.readList(register_address, 2)
