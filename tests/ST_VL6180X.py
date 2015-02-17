@@ -168,15 +168,42 @@ class VL6180X:
         self.set_register(0x01ac, 0x3e)
         self.set_register(0x01a7, 0x1f)
         self.set_register(0x0030, 0x00)
+        if self.debug:
+            print"Register settings:"
+            print"0x0207 - %x" % self.get_register(0x0207)
+            print"0x0208 - %x" % self.get_register(0x0208)
+            print"0x0096 - %x" % self.get_register(0x0096)
+            print"0x0097 - %x" % self.get_register(0x0097)
+            print"0x00e3 - %x" % self.get_register(0x00e3)
+            print"0x00e4 - %x" % self.get_register(0x00e4)
+            print"0x00e5 - %x" % self.get_register(0x00e5)
+            print"0x00e6 - %x" % self.get_register(0x00e6)
+            print"0x00e7 - %x" % self.get_register(0x00e7)
+            print"0x00f5 - %x" % self.get_register(0x00f5)
+            print"0x00d9 - %x" % self.get_register(0x00d9)
+            print"0x00db - %x" % self.get_register(0x00db)
+            print"0x00dc - %x" % self.get_register(0x00dc)
+            print"0x00dd - %x" % self.get_register(0x00dd)
+            print"0x009f - %x" % self.get_register(0x009f)
+            print"0x00a3 - %x" % self.get_register(0x00a3)
+            print"0x00b7 - %x" % self.get_register(0x00b7)
+            print"0x00bb - %x" % self.get_register(0x00bb)
+            print"0x00b2 - %x" % self.get_register(0x00b2)
+            print"0x00ca - %x" % self.get_register(0x00ca)
+            print"0x0198 - %x" % self.get_register(0x0198)
+            print"0x01b0 - %x" % self.get_register(0x01b0)
+            print"0x01ad - %x" % self.get_register(0x01ad)
+            print"0x00ff - %x" % self.get_register(0x00ff)
+            print"0x0100 - %x" % self.get_register(0x0100)
+            print"0x0199 - %x" % self.get_register(0x0199)
+            print"0x01a6 - %x" % self.get_register(0x01a6)
+            print"0x01ac - %x" % self.get_register(0x01ac)
+            print"0x01a7 - %x" % self.get_register(0x01a7)
+            print"0x0030 - %x" % self.get_register(0x0030)
 
     def default_settings(self):
         # Recommended settings from datasheet
         # http://www.st.com/st-web-ui/static/active/en/resource/technical/document/application_note/DM00122600.pdf
-
-        # Enable Interrupts on Conversion Complete (any source)
-        # Set GPIO1 high when sample complete
-        self.set_register(
-            self.__VL6180X_SYSTEM_INTERRUPT_CONFIG_GPIO, (4 << 3) | 4)
         # Set GPIO1 high when sample complete
         self.set_register(self.__VL6180X_SYSTEM_MODE_GPIO1, 0x10)
         # Set Avg sample period
@@ -195,7 +222,7 @@ class VL6180X:
         # Set default ranging inter-measurement period to 100ms
         self.set_register(self.__VL6180X_SYSRANGE_INTERMEASUREMENT_PERIOD, 0x09)
         # Set default ALS inter-measurement period to 100ms
-        self.set_register(self.__VL6180X_SYSALS_INTERMEASUREMENT_PERIOD, 0x0A)
+        self.set_register(self.__VL6180X_SYSALS_INTERMEASUREMENT_PERIOD, 0x31)
         # Configures interrupt on 'New Sample Ready threshold event' 
         self.set_register(self.__VL6180X_SYSTEM_INTERRUPT_CONFIG_GPIO, 0x24)
 
@@ -206,10 +233,48 @@ class VL6180X:
         self.set_register_16bit(
             self.__VL6180X_SYSRANGE_EARLY_CONVERGENCE_ESTIMATE, 0x7B)
         self.set_register_16bit(self.__VL6180X_SYSALS_INTEGRATION_PERIOD, 0x64)
-
-        self.set_register(self.__VL6180X_READOUT_AVERAGING_SAMPLE_PERIOD, 0x30)
         self.set_register(self.__VL6180X_SYSALS_ANALOGUE_GAIN, 0x40)
         self.set_register(self.__VL6180X_FIRMWARE_RESULT_SCALER, 0x01)
+
+        if self.debug:
+            print "Default settings:"
+            print "SYSTEM_MODE_GPIO1 - %x" % \
+                  self.get_register(self.__VL6180X_SYSTEM_MODE_GPIO1)
+            print "READOUT_AVERAGING_SAMPLE_PERIOD - %x" % \
+                  self.get_register(
+                      self.__VL6180X_READOUT_AVERAGING_SAMPLE_PERIOD)
+            print "SYSALS_ANALOGUE_GAIN - %x" % \
+                  self.get_register(self.__VL6180X_SYSALS_ANALOGUE_GAIN)
+            print "SYSRANGE_VHV_REPEAT_RATE - %x" % \
+                  self.get_register(self.__VL6180X_SYSRANGE_VHV_REPEAT_RATE)
+            print "SYSALS_INTEGRATION_PERIOD - %x" % \
+                  self.get_register(self.__VL6180X_SYSALS_INTEGRATION_PERIOD)
+            print "SYSRANGE_VHV_RECALIBRATE - %x" % \
+                  self.get_register(self.__VL6180X_SYSRANGE_VHV_RECALIBRATE)
+            print "SYSRANGE_INTERMEASUREMENT_PERIOD - %x" % \
+                  self.get_register(
+                      self.__VL6180X_SYSRANGE_INTERMEASUREMENT_PERIOD)
+            print "SYSALS_INTERMEASUREMENT_PERIOD - %x" % \
+                  self.get_register(
+                      self.__VL6180X_SYSALS_INTERMEASUREMENT_PERIOD)
+            print "SYSTEM_INTERRUPT_CONFIG_GPIO - %x" % \
+                  self.get_register(
+                      self.__VL6180X_SYSTEM_INTERRUPT_CONFIG_GPIO)
+            print "SYSRANGE_MAX_CONVERGENCE_TIME - %x" % \
+                  self.get_register(
+                      self.__VL6180X_SYSRANGE_MAX_CONVERGENCE_TIME)
+            print "SYSRANGE_RANGE_CHECK_ENABLES - %x" % \
+                  self.get_register(self.__VL6180X_SYSRANGE_RANGE_CHECK_ENABLES)
+            print "SYSRANGE_EARLY_CONVERGENCE_ESTIMATE - %x" % \
+                  self.get_register_16bit(
+                      self.__VL6180X_SYSRANGE_EARLY_CONVERGENCE_ESTIMATE)
+            print "SYSALS_INTEGRATION_PERIOD - %x" % \
+                  self.get_register_16bit(
+                      self.__VL6180X_SYSALS_INTEGRATION_PERIOD)
+            print "SYSALS_ANALOGUE_GAIN - %x" % \
+                  self.get_register(self.__VL6180X_SYSALS_ANALOGUE_GAIN)
+            print "FIRMWARE_RESULT_SCALER - %x" % \
+                  self.get_register(self.__VL6180X_FIRMWARE_RESULT_SCALER)
 
     def get_identification(self):
 
@@ -245,6 +310,9 @@ class VL6180X:
         # Start Single shot mode
         self.set_register(self.__VL6180X_SYSRANGE_START, 0x01)
         time.sleep(0.010)
+        if self.debug:
+            print "Range status: %x" % \
+                  self.get_register(self.__VL6180X_RESULT_RANGE_STATUS) & 0xF1
         distance = self.get_register(self.__VL6180X_RESULT_RANGE_VAL)
         self.set_register(self.__VL6180X_SYSTEM_INTERRUPT_CLEAR, 0x07)
         return distance
@@ -271,10 +339,12 @@ class VL6180X:
 
         time.sleep(0.100)   # give it time...
 
-        self.set_register(self.__VL6180X_SYSTEM_INTERRUPT_CLEAR, 0x07)
-
         # Retrieve the Raw ALS value from the sensor
+        if self.debug:
+            print "ALS status: %x" % \
+                  self.get_register(self.__VL6180X_RESULT_ALS_STATUS) & 0xF1
         als_raw = self.get_register_16bit(self.__VL6180X_RESULT_ALS_VAL)
+        self.set_register(self.__VL6180X_SYSTEM_INTERRUPT_CLEAR, 0x07)
 
         # Get Integration Period for calculation, we do this every time in case
         # someone changes it on us.
@@ -284,7 +354,8 @@ class VL6180X:
         als_integration_period = 100.0 / als_integration_period_raw
 
         # Calculate actual LUX from application note
-        als_calculated = 0.32 * (als_raw / als_gain_actual) * als_integration_period
+        als_calculated = \
+            0.32 * (als_raw / als_gain_actual) * als_integration_period
 
         return als_calculated
 
