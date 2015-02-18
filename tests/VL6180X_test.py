@@ -18,16 +18,15 @@ if len(sys.argv) > 1:
 tof_address = 0x29
 tof_sensor = VL6180X(address=tof_address, debug=debug)
 tof_sensor.get_identification()
-if tof_sensor.debug:
-    if tof_sensor.idModel != 0xB4:
-        print"Not a valid sensor id: %X" % tof_sensor.idModel
-    else:
-        print"Sensor model: %X" % tof_sensor.idModel
-        print"Sensor model rev.: %d.%d" % \
-             (tof_sensor.idModelRevMajor, tof_sensor.idModelRevMinor)
-        print"Sensor module rev.: %d.%d" % \
-             (tof_sensor.idModuleRevMajor, tof_sensor.idModuleRevMinor)
-        print"Sensor date/time: %X/%X" % (tof_sensor.idDate, tof_sensor.idTime)
+if tof_sensor.idModel != 0xB4:
+    print"Not a valid sensor id: %X" % tof_sensor.idModel
+else:
+    print"Sensor model: %X" % tof_sensor.idModel
+    print"Sensor model rev.: %d.%d" % \
+         (tof_sensor.idModelRevMajor, tof_sensor.idModelRevMinor)
+    print"Sensor module rev.: %d.%d" % \
+         (tof_sensor.idModuleRevMajor, tof_sensor.idModuleRevMinor)
+    print"Sensor date/time: %X/%X" % (tof_sensor.idDate, tof_sensor.idTime)
 tof_sensor.default_settings()
 
 # Set output pin numbers for LEDS
