@@ -9,8 +9,9 @@ from ST_VL6180X import VL6180X
 from time import sleep
 import RPi.GPIO as GPIO  # Import GPIO functions
 
-if sys.argv[1] == "debug":  # sys.argv[0] is the filename
-    debug = True
+if len(sys.argv) > 1:
+    if sys.argv[1] == "debug":  # sys.argv[0] is the filename
+        debug = True
 else:
     debug = False
 
