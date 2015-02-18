@@ -4,13 +4,19 @@
  - power explorer board with 3.3 V
  - explorer board includes pull-ups on i2c """
 
+import sys
 from ST_VL6180X import VL6180X
 from time import sleep
 import RPi.GPIO as GPIO  # Import GPIO functions
 
+if sys.argv[0] == "debug":
+    debug = True
+else:
+    debug = False
+
 # setup i2c bus and ToF address
 tof_address = 0x29
-tof_sensor = VL6180X(address=tof_address, debug=True)
+tof_sensor = VL6180X(address=tof_address, debug=debug)
 tof_sensor.get_identification()
 if tof_sensor.debug:
     if tof_sensor.idModel != 0xB4:
