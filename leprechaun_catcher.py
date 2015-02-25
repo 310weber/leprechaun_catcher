@@ -1,6 +1,6 @@
 # Servo Control
 import RPi.GPIO as GPIO
-from ST_VL6180X import VL6180X
+from lib.ST_VL6180X import VL6180X
 from time import sleep
 
 
@@ -32,7 +32,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(switch_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 tof_address = 0x29
-tof_sensor = VL6180X(address=tof_address, debug=debug)
+tof_sensor = VL6180X(address=tof_address, debug=False)
 tof_sensor.get_identification()
 if tof_sensor.idModel != 0xB4:
     print"Not a valid sensor id: %X" % tof_sensor.idModel
@@ -53,25 +53,28 @@ set_pwm("active", "1")
 delay_period = 0.1
 arm_up = 98             # angle of arm in 'up' position
 arm_down = 12           # angle of arm in 'down' position
-trap_active = None      # flag if trap is active or not
+trap_active = False     # flag if trap is active or not
+trap_empty = True	# flag if trap has something caught in it
 
 while True:
     # check activation switch - up is True (active), down is False (deactivated)
-    if GPIO.input(switch_pin) is False and trap_active is not False:
+    if (GPIO.input(switch_pin) == False) and (trap_active is not False):
         set_servo(arm_up)
         trap_active = False
         print"Trap deactivated. Safe for maintenance."
-    elif GPIO.input(switch_pin) is True and trap_active is not True:
+    elif (GPIO.input(switch_pin) == True) and (trap_active is not True):
         set_servo(arm_up)
         trap_active = True
+        trap_empty = True
         print "Trap activated.  Approach with caution."
 
     # if the trap is active, check for Leprechauns
-    if trap_active is True:
+    if (trap_active is True) and (trap_empty is True):
         distance = check_distance()
         light = check_light()
         if distance in range(60, 90):
             set_servo(arm_down)
+            trap_empty = False
             if light < 100:
                 print"You have caught a Leprechaun.  He's not very bright."
             else:
