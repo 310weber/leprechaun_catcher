@@ -7,9 +7,11 @@ from Adafruit_I2C import Adafruit_I2C
 # ST_VL6180x ToF ranger Class
 #
 # Originally written by A. Weber
-# References Arduino Library by Casey Kuhns of SparkFun
+# References Arduino library by Casey Kuhns of SparkFun:
 # https://github.com/sparkfun/ToF_Range_Finder-VL6180_Library\
 #
+# Requires Adafruit I2C library:
+# https://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code/tree/master/Adafruit_I2C
 # ===========================================================================
 
 
