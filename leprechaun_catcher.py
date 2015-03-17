@@ -17,7 +17,7 @@ def set_pwm(pwm_property, value):
 def set_servo(angle):
     set_pwm("active", "1")
     set_pwm("servo", str(angle))
-    sleep(2)
+    sleep(1)
     set_pwm("active", "0")
 
 
@@ -70,6 +70,8 @@ while True:
         set_servo(arm_up)
         trap_active = True
         trap_empty = True
+        for i in range(0, 20):          # purge errant readings from sensor
+            distance = check_distance()
         print "Trap activated.  Approach with caution."
 
     # if the trap is active, check for Leprechauns
@@ -84,7 +86,5 @@ while True:
                 print"You have caught a Leprechaun.  He's not very bright."
             else:
                 print"You have caught an exceptionally bright Leprechaun!"
-        # else:
-            # set_servo(arm_up)
 
     sleep(0.2)
