@@ -51,9 +51,7 @@ tof_sensor.default_settings()
 set_pwm("delayed", "0")
 set_pwm("mode", "servo")
 set_pwm("servo_max", "195")
-# set_pwm("active", "1")
 
-delay_period = 0.1
 arm_up = 98             # angle of arm in 'up' position
 arm_down = 12           # angle of arm in 'down' position
 trap_active = False     # flag if trap is active or not
@@ -70,7 +68,7 @@ while True:
         set_servo(arm_up)
         trap_active = True
         trap_empty = True
-        for i in range(0, 20):          # purge errant readings from sensor
+        for i in range(0, 25):          # purge errant readings from sensor
             distance = check_distance()
         print "Trap activated.  Approach with caution."
 
