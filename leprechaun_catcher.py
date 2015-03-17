@@ -15,7 +15,9 @@ def set_pwm(pwm_property, value):
 
 
 def set_servo(angle):
+    set_pwm("active", "1")
     set_pwm("servo", str(angle))
+    set_pwm("active", "0")
 
 
 def check_distance():
@@ -48,13 +50,13 @@ tof_sensor.default_settings()
 set_pwm("delayed", "0")
 set_pwm("mode", "servo")
 set_pwm("servo_max", "195")
-set_pwm("active", "1")
+# set_pwm("active", "1")
 
 delay_period = 0.1
 arm_up = 98             # angle of arm in 'up' position
 arm_down = 12           # angle of arm in 'down' position
 trap_active = False     # flag if trap is active or not
-trap_empty = True	# flag if trap has something caught in it
+trap_empty = True       # flag if trap has something caught in it
 
 while True:
     # check activation switch - up is True (active), down is False (deactivated)
@@ -72,6 +74,7 @@ while True:
     if (trap_active is True) and (trap_empty is True):
         distance = check_distance()
         light = check_light()
+        print "d=%d l=%d" % (distance, light)
         if distance in range(60, 90):
             set_servo(arm_down)
             trap_empty = False
@@ -79,7 +82,7 @@ while True:
                 print"You have caught a Leprechaun.  He's not very bright."
             else:
                 print"You have caught an exceptionally bright Leprechaun!"
-        else:
-            set_servo(arm_up)
+        # else:
+            # set_servo(arm_up)
 
     sleep(0.2)
