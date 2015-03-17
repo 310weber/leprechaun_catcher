@@ -17,6 +17,7 @@ def set_pwm(pwm_property, value):
 def set_servo(angle):
     set_pwm("active", "1")
     set_pwm("servo", str(angle))
+    sleep(2)
     set_pwm("active", "0")
 
 
@@ -60,18 +61,19 @@ trap_empty = True       # flag if trap has something caught in it
 
 while True:
     # check activation switch - up is True (active), down is False (deactivated)
-    if (GPIO.input(switch_pin) == False) and (trap_active is not False):
+    if (GPIO.input(switch_pin) == False) and (trap_active != False):
         set_servo(arm_up)
         trap_active = False
+        trap_empty = True
         print"Trap deactivated. Safe for maintenance."
-    elif (GPIO.input(switch_pin) == True) and (trap_active is not True):
+    elif (GPIO.input(switch_pin) == True) and (trap_active != True):
         set_servo(arm_up)
         trap_active = True
         trap_empty = True
         print "Trap activated.  Approach with caution."
 
     # if the trap is active, check for Leprechauns
-    if (trap_active is True) and (trap_empty is True):
+    if (trap_active == True) and (trap_empty == True):
         distance = check_distance()
         light = check_light()
         print "d=%d l=%d" % (distance, light)
