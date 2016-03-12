@@ -1,10 +1,10 @@
 # Leprechaun Catcher Python Code #
 A python script to operate a leprechaun catcher using an ST VL6180X time-of-flight ranging sensor, and an RC servo on Raspberry Pi.
 
-Check out the project page on Hackaday.io ([https://hackaday.io/project/10072-leprechaun-catcher](Link URL))
+Check out the project page on Hackaday.io ([https://hackaday.io/project/10072-leprechaun-catcher](https://hackaday.io/project/10072-leprechaun-catcher))
 
 * Make sure you have i2c enabled and python-rpi.gpio installed on your raspberry pi.
-* Copy my ST VL6180X library (https://bitbucket.org/310weber/st_vl6180x) into ./lib/ folder
+* Copy my ST VL6180X library ([https://bitbucket.org/310weber/st_vl6180x](https://bitbucket.org/310weber/st_vl6180x)) into ./lib/ folder
 
 
 Written by Arnie Weber.  BSD license, all text above and below must be included in any redistribution
