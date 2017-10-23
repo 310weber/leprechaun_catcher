@@ -18,7 +18,7 @@ def set_servo(value):
     #set_pwm("active", "1")
     #set_pwm("servo", str(value))
     servo = GPIO.PWM(servo_pin, value)
-    servo.start(50)     # start servo at 50% duty cycle
+    servo.start(servo_duty*100)     # start servo at set % duty cycle
     sleep(1)
     #set_pwm("active", "0")
     servo.stop()
@@ -58,22 +58,20 @@ GPIO.setup(servo_pin, GPIO.OUT)
 
 #arm_up = 98             # angle of arm in 'up' position
 #arm_down = 12           # angle of arm in 'down' position
-arm_up = 350            # angle of arm in 'up' position (PWM frequency @ 50% duty cycle)
-arm_mid = 600           # mid position to get arm moving in proper direction
-arm_down = 900          # angle of arm in 'down' position (PWM frequency @ 50% duty cycle)
+servo_duty = 0.7
+arm_up = servo_duty/0.0015      # angle of arm in 'up' position (PWM frequency @ set duty cycle)
+arm_down = servo_duty/0.0007    # angle of arm in 'down' position (PWM frequency @ 50% duty cycle)
 trap_active = False     # flag if trap is active or not
 trap_empty = True       # flag if trap has something caught in it
 
 while True:
     # check activation switch - up is True (active), down is False (deactivated)
-    if (GPIO.input(switch_pin) == False) and (trap_active != False):
-        set_servo(arm_mid)
+    if (GPIO.input(switch_pin) is False) and (trap_active is not False):
         set_servo(arm_up)
         trap_active = False
         trap_empty = True
         print"Trap deactivated. Safe for maintenance."
-    elif (GPIO.input(switch_pin) == True) and (trap_active != True):
-        set_servo(arm_mid)
+    elif (GPIO.input(switch_pin) is True) and (trap_active is not True):
         set_servo(arm_up)
         trap_active = True
         trap_empty = True
@@ -82,12 +80,11 @@ while True:
         print "Trap activated.  Approach with caution."
 
     # if the trap is active, check for Leprechauns
-    if (trap_active == True) and (trap_empty == True):
+    if (trap_active is True) and (trap_empty is True):
         distance = check_distance()
         light = check_light()
         print "d=%d l=%d" % (distance, light)
         if distance in range(60, 90):
-            set_servo(arm_mid)
             set_servo(arm_down)
             trap_empty = False
             if light < 100:
