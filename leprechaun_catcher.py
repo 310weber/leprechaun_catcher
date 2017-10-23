@@ -59,8 +59,8 @@ GPIO.setup(servo_pin, GPIO.OUT)
 #arm_up = 98             # angle of arm in 'up' position
 #arm_down = 12           # angle of arm in 'down' position
 servo_duty = 0.7
-arm_up = servo_duty/0.0015      # angle of arm in 'up' position (PWM frequency @ set duty cycle)
-arm_down = servo_duty/0.0007    # angle of arm in 'down' position (PWM frequency @ 50% duty cycle)
+arm_up = round(servo_duty/0.0015, 1)        # angle of arm in 'up' position (PWM frequency @ set duty cycle)
+arm_down = round(servo_duty/0.0007, 1)      # angle of arm in 'down' position (PWM frequency @ 50% duty cycle)
 trap_active = False     # flag if trap is active or not
 trap_empty = True       # flag if trap has something caught in it
 
