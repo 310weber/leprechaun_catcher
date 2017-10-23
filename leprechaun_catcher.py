@@ -59,18 +59,21 @@ GPIO.setup(servo_pin, GPIO.OUT)
 #arm_up = 98             # angle of arm in 'up' position
 #arm_down = 12           # angle of arm in 'down' position
 arm_up = 350            # angle of arm in 'up' position (PWM frequency @ 50% duty cycle)
-arm_down = 900           # angle of arm in 'down' position (PWM frequency @ 50% duty cycle)
+arm_mid = 600           # mid position to get arm moving in proper direction
+arm_down = 900          # angle of arm in 'down' position (PWM frequency @ 50% duty cycle)
 trap_active = False     # flag if trap is active or not
 trap_empty = True       # flag if trap has something caught in it
 
 while True:
     # check activation switch - up is True (active), down is False (deactivated)
     if (GPIO.input(switch_pin) == False) and (trap_active != False):
+        set_servo(arm_mid)
         set_servo(arm_up)
         trap_active = False
         trap_empty = True
         print"Trap deactivated. Safe for maintenance."
     elif (GPIO.input(switch_pin) == True) and (trap_active != True):
+        set_servo(arm_mid)
         set_servo(arm_up)
         trap_active = True
         trap_empty = True
@@ -84,6 +87,7 @@ while True:
         light = check_light()
         print "d=%d l=%d" % (distance, light)
         if distance in range(60, 90):
+            set_servo(arm_mid)
             set_servo(arm_down)
             trap_empty = False
             if light < 100:
