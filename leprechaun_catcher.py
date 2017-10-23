@@ -14,12 +14,14 @@ def set_pwm(pwm_property, value):
         print("Error writing to: " + pwm_property + " value: " + value)
 
 
-def set_servo(angle):
-    set_pwm("active", "1")
-    set_pwm("servo", str(angle))
+def set_servo(value):
+    #set_pwm("active", "1")
+    #set_pwm("servo", str(value))
+    servo = GPIO.PWM(servo_pin, value)
+    servo.start(50)     # start servo at 50% duty cycle
     sleep(1)
-    set_pwm("active", "0")
-
+    #set_pwm("active", "0")
+    servo.stop()
 
 def check_distance():
     return tof_sensor.get_distance()
@@ -48,12 +50,16 @@ else:
     print"Sensor date/time: %X/%X" % (tof_sensor.idDate, tof_sensor.idTime)
 tof_sensor.default_settings()
 
-set_pwm("delayed", "0")
-set_pwm("mode", "servo")
-set_pwm("servo_max", "195")
+#set_pwm("delayed", "0")
+#set_pwm("mode", "servo")
+#set_pwm("servo_max", "195")
+servo_pin = 18
+GPIO.setup(servo_pin, GPIO.OUT)
 
-arm_up = 98             # angle of arm in 'up' position
-arm_down = 12           # angle of arm in 'down' position
+#arm_up = 98             # angle of arm in 'up' position
+#arm_down = 12           # angle of arm in 'down' position
+arm_up = 350            # angle of arm in 'up' position (PWM frequency @ 50% duty cycle)
+arm_down = 900           # angle of arm in 'down' position (PWM frequency @ 50% duty cycle)
 trap_active = False     # flag if trap is active or not
 trap_empty = True       # flag if trap has something caught in it
 
